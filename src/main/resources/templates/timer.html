@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>타이머와 입력 제출</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #timer {
+            font-size: 3em;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        button {
+            font-size: 1em;
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #inputSection {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 300px;
+        }
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+<div id="timer">00:00:00</div>
+<div>
+    <button id="startButton">시작</button>
+    <button id="stopButton">종료</button>
+</div>
+<div id="inputSection">
+    <form th:action="@{/submit}" method="post">
+        <input type="hidden" id="timeField" name="time" value="00:00:00">
+        <input type="text" name="text" id="inputField" placeholder="글자를 입력하세요" required>
+        <button type="submit">제출</button>
+    </form>
+</div>
+
+<script>
+    let timerInterval;
+    let elapsedTime = 0;
+
+    function formatTime(timeInMillis) {
+        const totalSeconds = Math.floor(timeInMillis / 1000);
+        const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+        const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+        const seconds = String(totalSeconds % 60).padStart(2, '0');
+
+        return `${hours}:${minutes}:${seconds}`;
+    }
+
+    function updateTimer() {
+        elapsedTime += 1000;
+        document.getElementById('timer').textContent = formatTime(elapsedTime);
+        document.getElementById('timeField').value = formatTime(elapsedTime);
+    }
+
+    document.getElementById('startButton').addEventListener('click', () => {
+        if (!timerInterval) {
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+    });
+
+    document.getElementById('stopButton').addEventListener('click', () => {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    });
+</script>
+</body>
+</html>
